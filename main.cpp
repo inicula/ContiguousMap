@@ -1,5 +1,7 @@
 #include <cstdlib>
+#include <functional>
 #include <initializer_list>
+#include <tuple>
 #include <iostream>
 #include <iterator>
 #include <numeric>
@@ -10,7 +12,8 @@
 #include <map>
 #include "ContiguousMap.h"
 
-void pvec(auto&& vec)
+template<typename T>
+void pvec(T&& vec)
 {
   for(auto el : vec)
   {
@@ -19,12 +22,27 @@ void pvec(auto&& vec)
   std::cout << "\n";
 }
 
+auto ret_pairs(int n)
+{
+  std::vector<std::pair<int, int>> res;
+  res.reserve(n);
+  for(int i = 0; i < n; ++i)
+  {
+    res.push_back({i, i});
+  }
+  return res;
+}
+
 int main()
 {
-  ContiguousMap<int, int> mp = {{1, 1}, {1, 2}};
-  mp.insert({1, 1});
-  for(auto el : mp)
+  auto pairs = ret_pairs(10);
+  ContiguousMap<int, int> my_map(pairs.cbegin(), pairs.cend());
+  my_map.erase(my_map.begin());
+  std::cout << my_map.erase(5) << std::endl;
+  std::cout << my_map.contains(5) << std::endl;
+  std::cout << my_map.contains(7) << std::endl;
+  for(auto el : my_map)
   {
-    std::cout << el.first << " ";
+    std::cout << el.first << " " << el.second << std::endl;
   }
 }

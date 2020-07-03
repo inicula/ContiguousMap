@@ -52,6 +52,8 @@ private:
   };
 
 public:
+  ContiguousMap() = default;
+
   template<typename InputIt>
   ContiguousMap(InputIt b, InputIt e)
   {
@@ -148,7 +150,31 @@ public:
     }
   }
 
-  bool find(const Key& k) const
+  void erase(iterator pos)
+  {
+    elements_.erase(pos);
+  }
+
+  void erase(const_iterator pos)
+  {
+    elements_.erase(pos);
+  }
+
+  bool erase(const Key& k)
+  {
+    auto it = find(k);
+    if(it == elements_.end())
+    {
+      return false;
+    }
+    else
+    {
+      elements_.erase(it);
+      return true;
+    }
+  }
+
+  iterator find(const Key& k)
   {
     auto it = lower_bound(k);
     if(it != elements_.end() && KeyComp()(k, it->first))
@@ -156,6 +182,29 @@ public:
       it = elements_.end();
     }
     return it;
+  }
+
+  const_iterator find(const Key& k) const
+  {
+    auto it = lower_bound(k);
+    if(it != elements_.cend() && KeyComp()(k, it->first))
+    {
+      it = elements_.cend();
+    }
+    return it;
+  }
+
+  bool contains(const Key& k) const
+  {
+    return std::binary_search(elements_.cbegin(), elements_.cend(), k,
+                              KeyComp());
+  }
+
+  auto operator<=>(const ContiguousMap& rhs) const = default;
+
+  void swap(ContiguousMap& rhs)
+  {
+    std::swap(elements_, rhs.elements_);
   }
 
 private:
